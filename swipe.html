@@ -42,14 +42,14 @@ html, body {
   user-select: none;
 }
 
-/* DAY TEXT */
+/* DAY */
 .day {
   font-size: 1.4rem;
   letter-spacing: 0.08em;
   margin-bottom: 12px;
 }
 
-/* MONEY ROW */
+/* MONEY */
 .money {
   display: flex;
   align-items: center;
@@ -82,7 +82,7 @@ html, body {
   justify-content: center;
 }
 
-/* per-reel travel */
+/* animation */
 @keyframes spin {
   from { transform: translateY(var(--start)); }
   to   { transform: translateY(calc(var(--start) - var(--travel))); }
@@ -123,10 +123,10 @@ scroller.addEventListener("scroll", () => {
   if (scroller.scrollLeft >= cardStep * 8) scroller.scrollLeft = cardStep;
 });
 
-// populate reels with desynced motion
+// reels
 document.querySelectorAll(".reel").forEach(reel => {
 
-  // digits (double stack)
+  // digits x2
   for (let i = 0; i <= 9; i++) {
     const d = document.createElement("div");
     d.textContent = i;
@@ -138,18 +138,21 @@ document.querySelectorAll(".reel").forEach(reel => {
     reel.appendChild(d);
   }
 
-  // random start offset
-  const offset = Math.floor(Math.random() * 10) * 30;
+  // random starting digit (NOT always 0)
+  const digit = Math.floor(Math.random() * 10);
+  const offset = digit * 30;
 
-  // random speed (never sync)
-  const duration = 6 + Math.random() * 14; // 6s–20s
+  // random speed + drift
+  const duration = 6 + Math.random() * 14;   // seconds
+  const travel   = 240 + Math.random() * 120; // px
 
-  // random travel distance
-  const travel = 240 + Math.random() * 120;
+  // phase offset so frame differs on load
+  const delay = -Math.random() * duration;
 
   reel.style.setProperty("--start", `-${offset}px`);
   reel.style.setProperty("--travel", `${travel}px`);
   reel.style.animationDuration = `${duration}s`;
+  reel.style.animationDelay = `${delay}s`;
 });
 </script>
 

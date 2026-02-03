@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>7 Days Cards</title>
+<title>7 Day Cards</title>
 
 <style>
 html, body {
@@ -18,29 +18,75 @@ html, body {
 /* SCROLLER */
 .scroller {
   display: flex;
-  align-items: center;
   height: 100%;
   overflow-x: scroll;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  padding: 0 40vw; /* centers card */
+}
+
+/* SNAP PAGE */
+.page {
+  flex: 0 0 100%;
+  height: 100%;
+  scroll-snap-align: center;
+  display: grid;
+  place-items: center;
 }
 
 /* CARD */
 .card {
-  flex: 0 0 180px;
-  height: 180px;
-  margin: 0 20px;
-  scroll-snap-align: center;
+  width: 200px;
+  height: 200px;
   background: #151515;
-  border-radius: 16px;
+  border-radius: 18px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 14px;
+}
+
+/* DAY LABEL */
+.day {
+  color: #aaa;
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+}
+
+/* MONEY ROW */
+.money {
+  display: flex;
+  align-items: center;
+  font-size: 1.6rem;
+  letter-spacing: 0.05em;
   color: #fff;
-  font-size: 1.4rem;
-  letter-spacing: 0.08em;
-  user-select: none;
+}
+
+/* $ SIGN */
+.money span {
+  margin-right: 6px;
+  opacity: 0.8;
+}
+
+/* INPUT */
+.money input {
+  width: 90px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 1.6rem;
+  font-family: inherit;
+}
+
+/* remove arrows (desktop) */
+.money input::-webkit-outer-spin-button,
+.money input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.money input[type=number] {
+  -moz-appearance: textfield;
 }
 </style>
 </head>
@@ -49,34 +95,67 @@ html, body {
 
 <div class="scroller" id="scroller">
   <!-- clone Sunday -->
-  <div class="card">Sunday</div>
+  <div class="page"><div class="card">
+    <div class="day">Sunday</div>
+    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
+  </div></div>
 
-  <div class="card">Monday</div>
-  <div class="card">Tuesday</div>
-  <div class="card">Wednesday</div>
-  <div class="card">Thursday</div>
-  <div class="card">Friday</div>
-  <div class="card">Saturday</div>
-  <div class="card">Sunday</div>
+  <div class="page"><div class="card">
+    <div class="day">Monday</div>
+    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
+  </div></div>
+
+  <div class="page"><div class="card">
+    <div class="day">Tuesday</div>
+    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
+  </div></div>
+
+  <div class="page"><div class="card">
+    <div class="day">Wednesday</div>
+    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
+  </div></div>
+
+  <div class="page"><div class="card">
+    <div class="day">Thursday</div>
+    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
+  </div></div>
+
+  <div class="page"><div class="card">
+    <div class="day">Friday</div>
+    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
+  </div></div>
+
+  <div class="page"><div class="card">
+    <div class="day">Saturday</div>
+    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
+  </div></div>
+
+  <div class="page"><div class="card">
+    <div class="day">Sunday</div>
+    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
+  </div></div>
 
   <!-- clone Monday -->
-  <div class="card">Monday</div>
+  <div class="page"><div class="card">
+    <div class="day">Monday</div>
+    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
+  </div></div>
 </div>
 
 <script>
 const scroller = document.getElementById("scroller");
-const cardWidth = 180 + 40; // card + margin
+const pageWidth = window.innerWidth;
 
-// start centered on Monday
-scroller.scrollLeft = cardWidth;
+// start on Monday
+scroller.scrollLeft = pageWidth;
 
 // infinite loop
 scroller.addEventListener("scroll", () => {
   if (scroller.scrollLeft <= 0) {
-    scroller.scrollLeft = cardWidth * 7;
+    scroller.scrollLeft = pageWidth * 7;
   }
-  if (scroller.scrollLeft >= cardWidth * 8) {
-    scroller.scrollLeft = cardWidth;
+  if (scroller.scrollLeft >= pageWidth * 8) {
+    scroller.scrollLeft = pageWidth;
   }
 });
 </script>

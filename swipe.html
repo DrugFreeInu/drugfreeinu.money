@@ -35,22 +35,13 @@ html, body {
 
 /* CARD */
 .card {
-  width: 200px;
-  height: 200px;
+  width: 180px;
+  height: 180px;
   background: #151515;
   border-radius: 18px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-}
-
-/* DAY LABEL */
-.day {
-  color: #aaa;
-  font-size: 0.9rem;
-  letter-spacing: 0.12em;
 }
 
 /* MONEY ROW */
@@ -58,35 +49,38 @@ html, body {
   display: flex;
   align-items: center;
   font-size: 1.6rem;
+  color: #fff;
   letter-spacing: 0.05em;
-  color: #fff;
 }
 
-/* $ SIGN */
-.money span {
-  margin-right: 6px;
-  opacity: 0.8;
+/* SLOT WINDOW */
+.slot {
+  width: 24px;
+  height: 32px;
+  overflow: hidden;
+  margin-left: 4px;
+  position: relative;
 }
 
-/* INPUT */
-.money input {
-  width: 90px;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: #fff;
-  font-size: 1.6rem;
-  font-family: inherit;
+/* SLOT REEL */
+.reel {
+  position: absolute;
+  top: 0;
+  animation: spin 8s linear infinite;
 }
 
-/* remove arrows (desktop) */
-.money input::-webkit-outer-spin-button,
-.money input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+/* DIGITS */
+.reel div {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.money input[type=number] {
-  -moz-appearance: textfield;
+
+/* slow, calm spin */
+@keyframes spin {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-320px); }
 }
 </style>
 </head>
@@ -94,69 +88,55 @@ html, body {
 <body>
 
 <div class="scroller" id="scroller">
+
   <!-- clone Sunday -->
   <div class="page"><div class="card">
-    <div class="day">Sunday</div>
-    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
+    <div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div>
   </div></div>
 
-  <div class="page"><div class="card">
-    <div class="day">Monday</div>
-    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
-  </div></div>
-
-  <div class="page"><div class="card">
-    <div class="day">Tuesday</div>
-    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
-  </div></div>
-
-  <div class="page"><div class="card">
-    <div class="day">Wednesday</div>
-    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
-  </div></div>
-
-  <div class="page"><div class="card">
-    <div class="day">Thursday</div>
-    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
-  </div></div>
-
-  <div class="page"><div class="card">
-    <div class="day">Friday</div>
-    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
-  </div></div>
-
-  <div class="page"><div class="card">
-    <div class="day">Saturday</div>
-    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
-  </div></div>
-
-  <div class="page"><div class="card">
-    <div class="day">Sunday</div>
-    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
-  </div></div>
+  <!-- days -->
+  <div class="page"><div class="card"><div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div></div>
+  <div class="page"><div class="card"><div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div></div>
+  <div class="page"><div class="card"><div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div></div>
+  <div class="page"><div class="card"><div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div></div>
+  <div class="page"><div class="card"><div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div></div>
+  <div class="page"><div class="card"><div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div></div>
+  <div class="page"><div class="card"><div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div></div>
 
   <!-- clone Monday -->
   <div class="page"><div class="card">
-    <div class="day">Monday</div>
-    <div class="money"><span>$</span><input type="number" inputmode="numeric" /></div>
+    <div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div>
   </div></div>
+
 </div>
 
 <script>
 const scroller = document.getElementById("scroller");
 const pageWidth = window.innerWidth;
 
-// start on Monday
-scroller.scrollLeft = pageWidth;
-
 // infinite loop
+scroller.scrollLeft = pageWidth;
 scroller.addEventListener("scroll", () => {
-  if (scroller.scrollLeft <= 0) {
-    scroller.scrollLeft = pageWidth * 7;
+  if (scroller.scrollLeft <= 0) scroller.scrollLeft = pageWidth * 7;
+  if (scroller.scrollLeft >= pageWidth * 8) scroller.scrollLeft = pageWidth;
+});
+
+// populate reels
+document.querySelectorAll(".reel").forEach(reel => {
+  for (let i = 0; i <= 9; i++) {
+    const d = document.createElement("div");
+    d.textContent = i;
+    reel.appendChild(d);
   }
-  if (scroller.scrollLeft >= pageWidth * 8) {
-    scroller.scrollLeft = pageWidth;
+  // duplicate for seamless loop
+  for (let i = 0; i <= 9; i++) {
+    const d = document.createElement("div");
+    d.textContent = i;
+    reel.appendChild(d);
   }
+
+  // slight random offset so reels don’t sync
+  reel.style.animationDelay = `${Math.random() * -8}s`;
 });
 </script>
 

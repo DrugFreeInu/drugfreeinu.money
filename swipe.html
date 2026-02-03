@@ -12,7 +12,7 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: #0b0b0b;
-  color: #fff;
+  color: #ffffff;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -28,8 +28,7 @@ html, body {
 .track {
   display: flex;
   height: 100%;
-  width: 700%; /* 7 slides */
-  transform: translateX(-100%);
+  width: 900%; /* 9 slides total */
 }
 
 /* SLIDE */
@@ -40,18 +39,17 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(2.5rem, 8vw, 4rem);
-  letter-spacing: 0.05em;
+  font-size: clamp(3rem, 9vw, 4.5rem);
+  letter-spacing: 0.08em;
   user-select: none;
 }
 </style>
 </head>
+
 <body>
 
 <div class="viewport">
-  <div class="track" id="track">
-    <!-- clones added by JS -->
-  </div>
+  <div class="track" id="track"></div>
 </div>
 
 <script>
@@ -67,32 +65,36 @@ const days = [
 
 const track = document.getElementById("track");
 
-// build slides with clones for infinite loop
+// Build slides with clones for infinite loop
 const slides = [
-  days[6], // clone Sunday at start
+  days[6], // clone Sunday (before Monday)
   ...days,
-  days[0]  // clone Monday at end
+  days[0]  // clone Monday (after Sunday)
 ];
 
 slides.forEach(day => {
-  const el = document.createElement("div");
-  el.className = "slide";
-  el.textContent = day;
-  track.appendChild(el);
+  const slide = document.createElement("div");
+  slide.className = "slide";
+  slide.textContent = day;
+  track.appendChild(slide);
 });
 
-let index = 1;
+let index = 1; // start on Monday
 let startX = 0;
 let currentX = 0;
 let isDragging = false;
-const slideWidth = window.innerWidth;
+let slideWidth = window.innerWidth;
 
 function setTranslate(x, animate = true) {
   track.style.transition = animate ? "transform 0.35s ease" : "none";
   track.style.transform = `translateX(${x}px)`;
 }
 
-function snap() {
+// Initial position (Monday)
+setTranslate(-index * slideWidth, false);
+
+// Handle looping snap
+function snapLoop() {
   if (index === 0) {
     index = 7;
     setTranslate(-index * slideWidth, false);
@@ -103,9 +105,7 @@ function snap() {
   }
 }
 
-setTranslate(-index * slideWidth, false);
-
-// touch events
+// Touch events
 track.addEventListener("touchstart", e => {
   startX = e.touches[0].clientX;
   isDragging = true;
@@ -120,7 +120,9 @@ track.addEventListener("touchmove", e => {
 });
 
 track.addEventListener("touchend", () => {
+  if (!isDragging) return;
   isDragging = false;
+
   const delta = currentX - startX;
 
   if (Math.abs(delta) > slideWidth * 0.25) {
@@ -128,7 +130,13 @@ track.addEventListener("touchend", () => {
   }
 
   setTranslate(-index * slideWidth, true);
-  setTimeout(snap, 360);
+  setTimeout(snapLoop, 360);
+});
+
+// Handle resize / rotation
+window.addEventListener("resize", () => {
+  slideWidth = window.innerWidth;
+  setTranslate(-index * slideWidth, false);
 });
 </script>
 

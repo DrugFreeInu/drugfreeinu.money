@@ -18,69 +18,29 @@ html, body {
 /* SCROLLER */
 .scroller {
   display: flex;
+  align-items: center;
   height: 100%;
   overflow-x: scroll;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-}
-
-/* SNAP PAGE */
-.page {
-  flex: 0 0 100%;
-  height: 100%;
-  scroll-snap-align: center;
-  display: grid;
-  place-items: center;
+  padding: 0 35vw; /* 👈 creates side peek */
 }
 
 /* CARD */
 .card {
-  width: 180px;
+  flex: 0 0 180px;
   height: 180px;
+  margin: 0 14px;
   background: #151515;
   border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-/* MONEY ROW */
-.money {
-  display: flex;
-  align-items: center;
-  font-size: 1.6rem;
   color: #fff;
-  letter-spacing: 0.05em;
-}
-
-/* SLOT WINDOW */
-.slot {
-  width: 24px;
-  height: 32px;
-  overflow: hidden;
-  margin-left: 4px;
-  position: relative;
-}
-
-/* SLOT REEL */
-.reel {
-  position: absolute;
-  top: 0;
-  animation: spin 8s linear infinite;
-}
-
-/* DIGITS */
-.reel div {
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* slow, calm spin */
-@keyframes spin {
-  from { transform: translateY(0); }
-  to   { transform: translateY(-320px); }
+  font-size: 1.4rem;
+  letter-spacing: 0.08em;
+  user-select: none;
+  scroll-snap-align: center;
 }
 </style>
 </head>
@@ -88,55 +48,38 @@ html, body {
 <body>
 
 <div class="scroller" id="scroller">
-
   <!-- clone Sunday -->
-  <div class="page"><div class="card">
-    <div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div>
-  </div></div>
+  <div class="card">Sunday</div>
 
-  <!-- days -->
-  <div class="page"><div class="card"><div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div></div>
-  <div class="page"><div class="card"><div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div></div>
-  <div class="page"><div class="card"><div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div></div>
-  <div class="page"><div class="card"><div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div></div>
-  <div class="page"><div class="card"><div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div></div>
-  <div class="page"><div class="card"><div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div></div>
-  <div class="page"><div class="card"><div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div></div>
+  <div class="card">Monday</div>
+  <div class="card">Tuesday</div>
+  <div class="card">Wednesday</div>
+  <div class="card">Thursday</div>
+  <div class="card">Friday</div>
+  <div class="card">Saturday</div>
+  <div class="card">Sunday</div>
 
   <!-- clone Monday -->
-  <div class="page"><div class="card">
-    <div class="money">$<div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div>
-  </div></div>
-
+  <div class="card">Monday</div>
 </div>
 
 <script>
 const scroller = document.getElementById("scroller");
-const pageWidth = window.innerWidth;
+
+// card width + margin (180 + 28)
+const cardStep = 208;
+
+// start centered on Monday
+scroller.scrollLeft = cardStep;
 
 // infinite loop
-scroller.scrollLeft = pageWidth;
 scroller.addEventListener("scroll", () => {
-  if (scroller.scrollLeft <= 0) scroller.scrollLeft = pageWidth * 7;
-  if (scroller.scrollLeft >= pageWidth * 8) scroller.scrollLeft = pageWidth;
-});
-
-// populate reels
-document.querySelectorAll(".reel").forEach(reel => {
-  for (let i = 0; i <= 9; i++) {
-    const d = document.createElement("div");
-    d.textContent = i;
-    reel.appendChild(d);
+  if (scroller.scrollLeft <= 0) {
+    scroller.scrollLeft = cardStep * 7;
   }
-  // duplicate for seamless loop
-  for (let i = 0; i <= 9; i++) {
-    const d = document.createElement("div");
-    d.textContent = i;
-    reel.appendChild(d);
+  if (scroller.scrollLeft >= cardStep * 8) {
+    scroller.scrollLeft = cardStep;
   }
-
-  // slight random offset so reels don’t sync
-  reel.style.animationDelay = `${Math.random() * -8}s`;
 });
 </script>
 

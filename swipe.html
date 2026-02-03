@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>7 Days</title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #0b0b0b;
+  color: #fff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* VIEWPORT */
+.viewport {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+/* TRACK */
+.track {
+  display: flex;
+  height: 100%;
+  width: 700%; /* 7 slides */
+  transform: translateX(-100%);
+}
+
+/* SLIDE */
+.slide {
+  width: 100%;
+  height: 100%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  letter-spacing: 0.05em;
+  user-select: none;
+}
+</style>
+</head>
+<body>
+
+<div class="viewport">
+  <div class="track" id="track">
+    <!-- clones added by JS -->
+  </div>
+</div>
+
+<script>
+const days = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday"
+];
+
+const track = document.getElementById("track");
+
+// build slides with clones for infinite loop
+const slides = [
+  days[6], // clone Sunday at start
+  ...days,
+  days[0]  // clone Monday at end
+];
+
+slides.forEach(day => {
+  const el = document.createElement("div");
+  el.className = "slide";
+  el.textContent = day;
+  track.appendChild(el);
+});
+
+let index = 1;
+let startX = 0;
+let currentX = 0;
+let isDragging = false;
+const slideWidth = window.innerWidth;
+
+function setTranslate(x, animate = true) {
+  track.style.transition = animate ? "transform 0.35s ease" : "none";
+  track.style.transform = `translateX(${x}px)`;
+}
+
+function snap() {
+  if (index === 0) {
+    index = 7;
+    setTranslate(-index * slideWidth, false);
+  }
+  if (index === 8) {
+    index = 1;
+    setTranslate(-index * slideWidth, false);
+  }
+}
+
+setTranslate(-index * slideWidth, false);
+
+// touch events
+track.addEventListener("touchstart", e => {
+  startX = e.touches[0].clientX;
+  isDragging = true;
+  track.style.transition = "none";
+});
+
+track.addEventListener("touchmove", e => {
+  if (!isDragging) return;
+  currentX = e.touches[0].clientX;
+  const delta = currentX - startX;
+  setTranslate(-index * slideWidth + delta, false);
+});
+
+track.addEventListener("touchend", () => {
+  isDragging = false;
+  const delta = currentX - startX;
+
+  if (Math.abs(delta) > slideWidth * 0.25) {
+    index += delta < 0 ? 1 : -1;
+  }
+
+  setTranslate(-index * slideWidth, true);
+  setTimeout(snap, 360);
+});
+</script>
+
+</body>
+</html>

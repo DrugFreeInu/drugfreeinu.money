@@ -42,7 +42,7 @@ html, body {
   user-select: none;
 }
 
-/* DAY TEXT — back to the clean one */
+/* DAY TEXT */
 .day {
   font-size: 1.4rem;
   letter-spacing: 0.08em;
@@ -69,7 +69,9 @@ html, body {
 .reel {
   position: absolute;
   top: 0;
-  animation: spin 12s linear infinite;
+  animation-name: spin;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
 
 /* DIGIT */
@@ -80,10 +82,10 @@ html, body {
   justify-content: center;
 }
 
-/* slow continuous spin */
+/* per-reel travel */
 @keyframes spin {
   from { transform: translateY(var(--start)); }
-  to   { transform: translateY(calc(var(--start) - 300px)); }
+  to   { transform: translateY(calc(var(--start) - var(--travel))); }
 }
 </style>
 </head>
@@ -93,14 +95,7 @@ html, body {
 <div class="scroller" id="scroller">
 
   <!-- clone Sunday -->
-  <div class="card">
-    <div class="day">Sunday</div>
-    <div class="money">$ 
-      <div class="slot"><div class="reel"></div></div>
-      <div class="slot"><div class="reel"></div></div>
-      <div class="slot"><div class="reel"></div></div>
-    </div>
-  </div>
+  <div class="card"><div class="day">Sunday</div><div class="money">$ <div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div>
 
   <div class="card"><div class="day">Monday</div><div class="money">$ <div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div>
   <div class="card"><div class="day">Tuesday</div><div class="money">$ <div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div>
@@ -111,14 +106,7 @@ html, body {
   <div class="card"><div class="day">Sunday</div><div class="money">$ <div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div>
 
   <!-- clone Monday -->
-  <div class="card">
-    <div class="day">Monday</div>
-    <div class="money">$ 
-      <div class="slot"><div class="reel"></div></div>
-      <div class="slot"><div class="reel"></div></div>
-      <div class="slot"><div class="reel"></div></div>
-    </div>
-  </div>
+  <div class="card"><div class="day">Monday</div><div class="money">$ <div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div>
 
 </div>
 
@@ -135,8 +123,10 @@ scroller.addEventListener("scroll", () => {
   if (scroller.scrollLeft >= cardStep * 8) scroller.scrollLeft = cardStep;
 });
 
-// populate reels + randomize start
+// populate reels with desynced motion
 document.querySelectorAll(".reel").forEach(reel => {
+
+  // digits (double stack)
   for (let i = 0; i <= 9; i++) {
     const d = document.createElement("div");
     d.textContent = i;
@@ -148,9 +138,18 @@ document.querySelectorAll(".reel").forEach(reel => {
     reel.appendChild(d);
   }
 
-  // random starting offset (desync)
+  // random start offset
   const offset = Math.floor(Math.random() * 10) * 30;
+
+  // random speed (never sync)
+  const duration = 6 + Math.random() * 14; // 6s–20s
+
+  // random travel distance
+  const travel = 240 + Math.random() * 120;
+
   reel.style.setProperty("--start", `-${offset}px`);
+  reel.style.setProperty("--travel", `${travel}px`);
+  reel.style.animationDuration = `${duration}s`;
 });
 </script>
 

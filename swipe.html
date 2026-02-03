@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +20,7 @@ html, body {
 .scroller {
   display: flex;
   align-items: center;
-  height: 100%;
+  height: calc(100% - 120px);
   overflow-x: scroll;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
@@ -82,10 +83,34 @@ html, body {
   justify-content: center;
 }
 
-/* animation */
+/* SPIN */
 @keyframes spin {
   from { transform: translateY(var(--start)); }
   to   { transform: translateY(calc(var(--start) - var(--travel))); }
+}
+
+/* CONTROLS */
+.controls {
+  height: 120px;
+  padding: 14px 18px;
+  background: #0f0f0f;
+  border-top: 1px solid #222;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: center;
+}
+
+.dial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #aaa;
+  font-size: 0.75rem;
+}
+
+input[type="range"] {
+  width: 90px;
 }
 </style>
 </head>
@@ -94,37 +119,34 @@ html, body {
 
 <div class="scroller" id="scroller">
 
-  <!-- clone Sunday -->
-  <div class="card"><div class="day">Sunday</div><div class="money">$ <div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div>
-
-  <div class="card"><div class="day">Monday</div><div class="money">$ <div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div>
-  <div class="card"><div class="day">Tuesday</div><div class="money">$ <div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div>
-  <div class="card"><div class="day">Wednesday</div><div class="money">$ <div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div>
-  <div class="card"><div class="day">Thursday</div><div class="money">$ <div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div>
-  <div class="card"><div class="day">Friday</div><div class="money">$ <div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div>
-  <div class="card"><div class="day">Saturday</div><div class="money">$ <div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div>
-  <div class="card"><div class="day">Sunday</div><div class="money">$ <div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div>
-
-  <!-- clone Monday -->
-  <div class="card"><div class="day">Monday</div><div class="money">$ <div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div><div class="slot"><div class="reel"></div></div></div></div>
+  <div class="card"><div class="day">Monday</div>
+    <div class="money">$ 
+      <div class="slot"><div class="reel col0"></div></div>
+      <div class="slot"><div class="reel col1"></div></div>
+      <div class="slot"><div class="reel col2"></div></div>
+    </div>
+  </div>
 
 </div>
 
+<!-- DIAL CONTROLS -->
+<div class="controls">
+  <div class="dial">Hundreds
+    <input type="range" min="0" max="9" value="0" data-col="0">
+  </div>
+  <div class="dial">Tens
+    <input type="range" min="0" max="9" value="0" data-col="1">
+  </div>
+  <div class="dial">Ones
+    <input type="range" min="0" max="9" value="0" data-col="2">
+  </div>
+</div>
+
 <script>
-const scroller = document.getElementById("scroller");
-const cardStep = 208;
+const reels = document.querySelectorAll(".reel");
 
-// start on Monday
-scroller.scrollLeft = cardStep;
-
-// infinite loop
-scroller.addEventListener("scroll", () => {
-  if (scroller.scrollLeft <= 0) scroller.scrollLeft = cardStep * 7;
-  if (scroller.scrollLeft >= cardStep * 8) scroller.scrollLeft = cardStep;
-});
-
-// reels
-document.querySelectorAll(".reel").forEach(reel => {
+/* INIT REELS */
+reels.forEach(reel => {
 
   // digits x2
   for (let i = 0; i <= 9; i++) {
@@ -138,21 +160,38 @@ document.querySelectorAll(".reel").forEach(reel => {
     reel.appendChild(d);
   }
 
-  // random starting digit (NOT always 0)
   const digit = Math.floor(Math.random() * 10);
   const offset = digit * 30;
-
-  // random speed + drift
-  const duration = 6 + Math.random() * 14;   // seconds
-  const travel   = 240 + Math.random() * 120; // px
-
-  // phase offset so frame differs on load
-  const delay = -Math.random() * duration;
+  const duration = 6 + Math.random() * 14;
+  const travel = 300;
 
   reel.style.setProperty("--start", `-${offset}px`);
   reel.style.setProperty("--travel", `${travel}px`);
   reel.style.animationDuration = `${duration}s`;
-  reel.style.animationDelay = `${delay}s`;
+  reel.style.animationDelay = `-${Math.random() * duration}s`;
+});
+
+/* DIAL CONTROL */
+document.querySelectorAll("input[type='range']").forEach(slider => {
+  const col = slider.dataset.col;
+
+  slider.addEventListener("input", e => {
+    const val = e.target.value;
+    reels.forEach(reel => {
+      if (reel.classList.contains(`col${col}`)) {
+        reel.style.animationPlayState = "paused";
+        reel.style.transform = `translateY(-${val * 30}px)`;
+      }
+    });
+  });
+
+  slider.addEventListener("change", e => {
+    reels.forEach(reel => {
+      if (reel.classList.contains(`col${col}`)) {
+        reel.style.animationPlayState = "running";
+      }
+    });
+  });
 });
 </script>
 

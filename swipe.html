@@ -3,43 +3,42 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>7 Days</title>
+<title>7 Days Cards</title>
 
 <style>
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden;
   background: #0b0b0b;
-  color: #ffffff;
+  overflow: hidden;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* VIEWPORT */
-.viewport {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  touch-action: pan-y;
-}
-
-/* TRACK */
-.track {
+/* SCROLLER */
+.scroller {
   display: flex;
+  align-items: center;
   height: 100%;
-  width: 900%; /* 9 slides total */
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 40vw; /* centers card */
 }
 
-/* SLIDE */
-.slide {
-  width: 100%;
-  height: 100%;
-  flex-shrink: 0;
+/* CARD */
+.card {
+  flex: 0 0 180px;
+  height: 180px;
+  margin: 0 20px;
+  scroll-snap-align: center;
+  background: #151515;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(3rem, 9vw, 4.5rem);
+  color: #fff;
+  font-size: 1.4rem;
   letter-spacing: 0.08em;
   user-select: none;
 }
@@ -48,95 +47,37 @@ html, body {
 
 <body>
 
-<div class="viewport">
-  <div class="track" id="track"></div>
+<div class="scroller" id="scroller">
+  <!-- clone Sunday -->
+  <div class="card">Sunday</div>
+
+  <div class="card">Monday</div>
+  <div class="card">Tuesday</div>
+  <div class="card">Wednesday</div>
+  <div class="card">Thursday</div>
+  <div class="card">Friday</div>
+  <div class="card">Saturday</div>
+  <div class="card">Sunday</div>
+
+  <!-- clone Monday -->
+  <div class="card">Monday</div>
 </div>
 
 <script>
-const days = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday"
-];
+const scroller = document.getElementById("scroller");
+const cardWidth = 180 + 40; // card + margin
 
-const track = document.getElementById("track");
+// start centered on Monday
+scroller.scrollLeft = cardWidth;
 
-// Build slides with clones for infinite loop
-const slides = [
-  days[6], // clone Sunday (before Monday)
-  ...days,
-  days[0]  // clone Monday (after Sunday)
-];
-
-slides.forEach(day => {
-  const slide = document.createElement("div");
-  slide.className = "slide";
-  slide.textContent = day;
-  track.appendChild(slide);
-});
-
-let index = 1; // start on Monday
-let startX = 0;
-let currentX = 0;
-let isDragging = false;
-let slideWidth = window.innerWidth;
-
-function setTranslate(x, animate = true) {
-  track.style.transition = animate ? "transform 0.35s ease" : "none";
-  track.style.transform = `translateX(${x}px)`;
-}
-
-// Initial position (Monday)
-setTranslate(-index * slideWidth, false);
-
-// Handle looping snap
-function snapLoop() {
-  if (index === 0) {
-    index = 7;
-    setTranslate(-index * slideWidth, false);
+// infinite loop
+scroller.addEventListener("scroll", () => {
+  if (scroller.scrollLeft <= 0) {
+    scroller.scrollLeft = cardWidth * 7;
   }
-  if (index === 8) {
-    index = 1;
-    setTranslate(-index * slideWidth, false);
+  if (scroller.scrollLeft >= cardWidth * 8) {
+    scroller.scrollLeft = cardWidth;
   }
-}
-
-// Touch events
-track.addEventListener("touchstart", e => {
-  startX = e.touches[0].clientX;
-  isDragging = true;
-  track.style.transition = "none";
-});
-
-track.addEventListener("touchmove", e => {
-  if (!isDragging) return;
-  currentX = e.touches[0].clientX;
-  const delta = currentX - startX;
-  setTranslate(-index * slideWidth + delta, false);
-});
-
-track.addEventListener("touchend", () => {
-  if (!isDragging) return;
-  isDragging = false;
-
-  const delta = currentX - startX;
-
-  if (Math.abs(delta) > slideWidth * 0.25) {
-    index += delta < 0 ? 1 : -1;
-  }
-
-  setTranslate(-index * slideWidth, true);
-  setTimeout(snapLoop, 360);
-});
-
-// Handle resize / rotation
-window.addEventListener("resize", () => {
-  slideWidth = window.innerWidth;
-  setTranslate(-index * slideWidth, false);
 });
 </script>
 
